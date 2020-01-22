@@ -134,7 +134,10 @@ router.post("/:id/steps", (req, res) => {
   ) {
     res
       .status(400)
-      .json({ message: "Please provide title and contents for the post." });
+      .json({
+        message:
+          "Please provide step number,instructions and scheme id for this step"
+      });
     return;
   }
 
@@ -146,7 +149,7 @@ router.post("/:id/steps", (req, res) => {
     })
     .catch(err => {
       res.status(500).json({
-        message: "There was an error while saving the post to the database"
+        message: "There was an error while saving the step to the database"
       });
     });
 });
