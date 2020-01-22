@@ -63,13 +63,26 @@ router.post("/", (req, res) => {
 });
 
 router.post("/:id/steps", (req, res) => {
-  const stepData = req.body;
+  const newStep = req.body;
   const { id } = req.params;
+
+  if (
+    !newStep.step_number ||
+    !newStep.instructions ||
+    !newStep.scheme_id ||
+    !req.body
+  ) {
+    res.status(400).json({
+      message:
+        "Please provide step number,instructions and scheme id for this step"
+    });
+    return;
+  }
 
   Schemes.findById(id)
     .then(scheme => {
       if (scheme) {
-        Schemes.addStep(stepData, id).then(step => {
+        Schemes.addStep(newStep, "id").then(step => {
           res.status(201).json(step);
         });
       } else {
@@ -119,38 +132,6 @@ router.delete("/:id", (req, res) => {
     })
     .catch(err => {
       res.status(500).json({ message: "Failed to delete scheme" });
-    });
-});
-
-router.post("/:id/steps", (req, res) => {
-  const newStep = req.body;
-  const { id } = req.params;
-
-  if (
-    !newStep.step_number ||
-    !newStep.instructions ||
-    !newStep.scheme_id ||
-    !req.body
-  ) {
-    res
-      .status(400)
-      .json({
-        message:
-          "Please provide step number,instructions and scheme id for this step"
-      });
-    return;
-  }
-
-  Schemes.findById(id)
-    .then(newS => {
-      Schemes.insertComment(newS.id)
-        .then(newS => res.status(201).json(newS[0]))
-        .catch(err => console.log(err));
-    })
-    .catch(err => {
-      res.status(500).json({
-        message: "There was an error while saving the step to the database"
-      });
     });
 });
 
